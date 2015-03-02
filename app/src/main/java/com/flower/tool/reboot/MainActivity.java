@@ -29,4 +29,9 @@ public class MainActivity extends Activity {
         Runtime.getRuntime().exec(new String[]{"su", "-c", "reboot"});
     }
 
+    public void action_air_plane(View view)  {
+    }
+    public void action_silent(View view)  {
+    }
+
 }

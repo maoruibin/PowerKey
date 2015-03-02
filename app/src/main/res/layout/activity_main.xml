@@ -14,16 +14,18 @@
         android:layout_marginBottom="20dp">
 
         <Button
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="126dp"
+            android:layout_height="133dp"
             android:text="关机"
             android:layout_marginRight="20dp"
-            android:onClick="action_power_off" />
+            android:background="@drawable/selector_power_off"
+            android:onClick="action_power_off"/>
 
         <Button
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="126dp"
+            android:layout_height="133dp"
             android:text="重启"
+            android:background="@drawable/selector_power_off"
             android:layout_marginLeft="20dp"
             android:onClick="action_reboot" />
     </LinearLayout>
@@ -36,18 +38,20 @@
         android:layout_marginTop="20dp">
 
         <Button
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="126dp"
+            android:layout_height="133dp"
             android:text="飞行模式"
             android:layout_marginRight="20dp"
-            android:onClick="action_air_plane" />
+            android:background="@drawable/selector_power_off"
+            android:onClick="action_air_plane"/>
 
         <Button
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="126dp"
+            android:layout_height="133dp"
             android:text="静音"
             android:layout_marginLeft="20dp"
-            android:onClick="action_silent" />
+            android:background="@drawable/selector_power_off"
+            android:onClick="action_silent"/>
     </LinearLayout>
 
 
