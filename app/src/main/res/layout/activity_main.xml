@@ -1,58 +1,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
     android:orientation="vertical"
     android:gravity="center">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginBottom="20dp">
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal|center_vertical">
 
-        <Button
-            android:layout_width="126dp"
-            android:layout_height="133dp"
+        <TextView
+            android:id="@+id/tv_power_off"
+            style="@style/button_style"
             android:text="关机"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/selector_power_off"
-            android:onClick="action_power_off"/>
+            android:layout_marginRight="20dp"/>
 
-        <Button
-            android:layout_width="126dp"
-            android:layout_height="133dp"
+        <TextView
+            android:id="@+id/tv_reboot"
+            android:layout_toRightOf="@+id/tv_power_off"
+            style="@style/button_style"
             android:text="重启"
-            android:background="@drawable/selector_power_off"
-            android:layout_marginLeft="20dp"
-            android:onClick="action_reboot" />
-    </LinearLayout>
+            android:layout_marginLeft="20dp"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="20dp">
 
-        <Button
-            android:layout_width="126dp"
-            android:layout_height="133dp"
+        <TextView
+            android:id="@+id/tv_air_plane"
+            style="@style/button_style"
+            android:layout_below="@+id/tv_power_off"
             android:text="飞行模式"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/selector_power_off"
-            android:onClick="action_air_plane"/>
+            android:layout_marginRight="20dp"/>
 
-        <Button
-            android:layout_width="126dp"
-            android:layout_height="133dp"
+        <TextView
+            android:id="@+id/tv_silent"
+            style="@style/button_style"
+            android:layout_below="@+id/tv_reboot"
+            android:layout_toRightOf="@+id/tv_air_plane"
             android:text="静音"
-            android:layout_marginLeft="20dp"
-            android:background="@drawable/selector_power_off"
-            android:onClick="action_silent"/>
-    </LinearLayout>
+            android:layout_marginLeft="20dp"/>
+    </RelativeLayout>
 
 
 </LinearLayout>
