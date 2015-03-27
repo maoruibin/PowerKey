@@ -1,6 +1,5 @@
 package com.flower.tool.reboot;
 
-import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -16,7 +15,9 @@ import java.util.Map;
  * Created by Mao on 14:51 2015/3/23
  */
 public class AnimManager {
-
+    public static final int DURATION_NORMAL = 500;
+    public static final int DURATION_ZERO = 0;
+    public static final int DURATION_LONG = 800;
     //存储管理器中的view
     private Map<ActionType,View> mViews = new HashMap<>();
     //每个view 的中心点坐标
@@ -24,10 +25,10 @@ public class AnimManager {
     //管理器中每个view 对应的隐藏位置
     private Map<ActionType,float[]> mHidePoint = new HashMap<>();
 
+    private Map<ActionType,Integer> mVisiblity = new HashMap<>();
+
     //屏幕中心的坐标点
     private float[] screenCenter = new float[]{0,0};
-    //记录要移动的view 的 横向和纵向位移大小值
-    private float[] historyOffset = new float[]{0,0};
     private Context mContext;
 
     public AnimManager(Context mContext) {
@@ -43,151 +44,126 @@ public class AnimManager {
         return new float[]{screenWidth/2,screenHeight/2};
     }
 
-
-    /**
-     * 获得当前隐藏的view的个数
-     * @return 如果隐藏的view数目大于零 则返回1 等于0 则返回0  ！ 嗯，这个方法的名字有点坑爹啊
-     */
-    public int getHideViewCountFlag(){
-       int count = 0;
-        for(ActionType type : mViews.keySet()){
-            if(mViews.get(type).getVisibility() != View.VISIBLE){
-                count += 1 ;
-                break;
-            }
-        }
-        return count;
-    }
-
-    public boolean canExecuteAction(){
-        if(getHideViewCountFlag()>0){
-            return true;
-        }
-        return false;
-    }
-
-
     public void addView(ActionType type,View view){
         mViews.put(type,view);
         mViewCenter.put(type, getViewCenterLocation(view));
         mHidePoint.put(type,getHidePosition(view,type));
+        mVisiblity.put(type,View.VISIBLE);
     }
 
     /**
      * 获取view对应的隐藏坐标
-     * @param view
-     * @return
+     * @param view 目标移动view
+     * @return float[0] X轴上的偏移位置 float[1] Y轴上的偏移位置
      */
     private float[] getHidePosition(View view,ActionType type) {
-        float[]position = new float[2];
-        float[]centerPoint = mViewCenter.get(type);
+        //translation[0] [1] 分别记录 view的水平移动距离和纵向移动距离
+        float[] translation = new float[2];
         switch (type){
             case POWER_OFF:
-                position[0] = -view.getWidth()/2;
-                position[1] = centerPoint[1]-view.getHeight()/2;
+                translation[0] = -view.getWidth() * 3/2;
+                translation[1] = -view.getHeight();
                 break;
             case REBOOT:
-//                position[0] = -view.getWidth()/2;
-//                position[1] = centerPoint[1]-view.getHeight()/2;
+                translation[0] = view.getWidth() * 3/2;
+                translation[1] = -view.getHeight();
                 break;
             case AIR_PLANE:
-                position[0] = -view.getWidth()/2;
-                position[1] = centerPoint[1] + view.getHeight();
+                translation[0] = -view.getWidth() * 3/2;
+                translation[1] = view.getHeight();
                 break;
             case SILENT:
-                position[0] = -view.getWidth()/2;
-                position[1] = centerPoint[1]-view.getHeight()/2;
+                translation[0] = view.getWidth() * 3/2;
+                translation[1] = view.getHeight();
                 break;
         }
-        return position;
+        return translation;
     }
 
     /**
      * 还原回原来的样子
      */
-    public void revertView(){
+    public void revertView(int duration){
         for(ActionType type : mViews.keySet()){
-            View view = mViews.get(type);
-            if(view.getVisibility() == View.VISIBLE){
-                moveViewToOrigin(view);
-            }else{
-                showView(view);
-            }
-        }
-    }
-    public void confirmExecute(View view){
-        for(ActionType type : mViews.keySet()){
-            if(mViews.get(type).getId() == view.getId()){
-                moveViewToCenter(view);
-            }else{
-                removeView(view, type);
-            }
+            translationAnim(mViews.get(type), 0, 0,duration);
         }
     }
 
-
-    private void removeView(View view,ActionType type){
-        float[]hideLocation = mHidePoint.get(type);
-        float[]viewCenterLocation = mViewCenter.get(type);
-
-        moveAnim(view,viewCenterLocation,hideLocation);
-
-//
-//
-//
-//        AnimatorSet animatorSet = new AnimatorSet();
-//        ObjectAnimator moveAnimX = ObjectAnimator.ofFloat(view,"translationX",0f,tempOffSet[0]);
-//        ObjectAnimator moveAnimY = ObjectAnimator.ofFloat(view,"translationY",0f,tempOffSet[1]);
-//
-//        animatorSet.setDuration(500);
-//        animatorSet.setInterpolator(new DecelerateInterpolator());
-//        animatorSet.playTogether(moveAnimX, moveAnimY);
-//
-//        animatorSet.start();
-
+    /**
+     * 按钮是否可以执行真真的动作相应
+     * @return true 可以执行相应的动作
+     */
+    public boolean canExecuteAction(){
+        int visibleCount = 0;
+        for(ActionType type : mVisiblity.keySet()){
+            if(mVisiblity.get(type) == View.VISIBLE){
+                visibleCount ++ ;
+            }
+        }
+        //只有当显示的数目为1 才会去执行 动作
+        return visibleCount == 1;
     }
+
+    public void resetVisibity(){
+        for(ActionType type : mVisiblity.keySet()){
+            mVisiblity.put(type,View.VISIBLE);
+        }
+    }
+
+    public void confirmExecute(final View view){
+        moveViewToCenter(view);
+        for(ActionType type : mViews.keySet()){
+            View tempView = mViews.get(type);
+            if(view.getId() != tempView.getId()){
+                float[]viewLocation = getHidePosition(view,type);
+                translationAnim(tempView, viewLocation[0], viewLocation[1],DURATION_NORMAL);
+                mVisiblity.put(type, View.INVISIBLE);
+            }else{
+                mVisiblity.put(type,View.VISIBLE);
+            }
+        }
+    }
+
 
     private void moveViewToCenter(View view){
         float[]viewLocation = getViewCenterLocation(view);
 
-        historyOffset[0] = screenCenter[0] - viewLocation[0];
-        historyOffset[1] = screenCenter[1] - viewLocation[1];
+        float[]offset = new float[2];
+        offset[0] = screenCenter[0] - viewLocation[0];
+        offset[1] = screenCenter[1] - viewLocation[1];
 
-        moveAnim(view,viewLocation,screenCenter);
+        translationAnim(view, offset[0], offset[1],DURATION_NORMAL);
 
     }
 
-    private void moveAnim(View view,float start[],float end[]){
-        float[]offset = new float[2];
-        offset[0] = end[0] - start[0];
-        offset[1] = end[1] - start[1];
-
+    private void translationAnim(View view,float offSetX,float offSetY,int duration){
         AnimatorSet animatorSet = new AnimatorSet();
-        ObjectAnimator moveAnimX = ObjectAnimator.ofFloat(view,"translationX",0f,offset[0]);
-        ObjectAnimator moveAnimY = ObjectAnimator.ofFloat(view,"translationY",0f,offset[1]);
+        ObjectAnimator moveAnimX = ObjectAnimator.ofFloat(view,"translationX",offSetX);
+        ObjectAnimator moveAnimY = ObjectAnimator.ofFloat(view,"translationY",offSetY);
 
-        animatorSet.setDuration(500);
+        animatorSet.setDuration(duration);
         animatorSet.setInterpolator(new DecelerateInterpolator());
         animatorSet.playTogether(moveAnimX, moveAnimY);
 
         animatorSet.start();
     }
+
 
     /**
-     * 让view回到原始位置
-     * @param view 目标view
+     * 初始进入程序时的动画控制
      */
-    private void moveViewToOrigin(View view){
-        AnimatorSet animatorSet = new AnimatorSet();
-        ObjectAnimator moveAnimX = ObjectAnimator.ofFloat(view,"translationX",historyOffset[0],0f);
-        ObjectAnimator moveAnimY = ObjectAnimator.ofFloat(view,"translationY",historyOffset[1],0f);
+    public void initEnter(){
+        for(ActionType type : mViews.keySet()){
+            View tempView = mViews.get(type);
+            float[]viewLocation = getHidePosition(tempView,type);
+            translationAnim(tempView, viewLocation[0], viewLocation[1],DURATION_ZERO);
+        }
+//        for(ActionType type : mViews.keySet()){
+//            translationAnim(mViews.get(type), 0, 0,DURATION_LONG);
+//        }
 
-        animatorSet.setDuration(500);
-        animatorSet.setInterpolator(new DecelerateInterpolator());
-        animatorSet.playTogether(moveAnimX, moveAnimY);
-        animatorSet.start();
+        revertView(DURATION_NORMAL);
     }
-
     /**
      * 获取view的中心点坐标
      * @param view 目标view
@@ -199,30 +175,5 @@ public class AnimManager {
         return new float[]{viewLocation[0]+view.getWidth()/2,viewLocation[1]+view.getHeight()/2};
     }
 
-    private void showView(final View view){
-        ObjectAnimator alphaAnim = ObjectAnimator.ofFloat(view,"alpha",0f,1f);
-        alphaAnim.setDuration(500);
-        alphaAnim.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
 
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                view.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
-        alphaAnim.start();
-    }
 }

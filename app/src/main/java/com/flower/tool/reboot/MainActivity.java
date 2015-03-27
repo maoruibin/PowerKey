@@ -49,13 +49,15 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
         mAnimManager = new AnimManager(this);
 
-        mTvSlient.post(new Runnable() {
+        mLLContainer.post(new Runnable() {
             @Override
             public void run() {
                 mAnimManager.addView(ActionType.POWER_OFF, mTvPowerOff);
                 mAnimManager.addView(ActionType.REBOOT, mTvReboot);
                 mAnimManager.addView(ActionType.AIR_PLANE, mTvAirPlane);
                 mAnimManager.addView(ActionType.SILENT, mTvSlient);
+
+                mAnimManager.initEnter();
             }
         });
 
@@ -65,7 +67,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     @Override
     public void onClick(View view) {
         if(mAnimManager.canExecuteAction()){
-            Toast.makeText(this,"执行 " + ((TextView)view).getText().toString(),Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this,"执行 " + ((TextView)view).getText().toString(),Toast.LENGTH_SHORT).show();
+            //mAnimManager.moveViewToOrigin(view);
         }else{
             mAnimManager.confirmExecute(view);
         }
@@ -75,8 +78,10 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         //只有 界面 上有隐藏的view的情况下 才可对onTouch方法进行处理
-        if(mAnimManager.getHideViewCountFlag()>0){
-            mAnimManager.revertView();
+        if(mAnimManager.canExecuteAction()){
+            mAnimManager.resetVisibity();
+            mAnimManager.revertView(AnimManager.DURATION_LONG);
+
         }
         return false;
     }
