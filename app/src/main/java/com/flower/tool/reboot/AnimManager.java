@@ -1,5 +1,6 @@
 package com.flower.tool.reboot;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
@@ -14,10 +15,10 @@ import java.util.Map;
 /**
  * Created by Mao on 14:51 2015/3/23
  */
-public class AnimManager {
+public class AnimManager{
     public static final int DURATION_NORMAL = 500;
     public static final int DURATION_ZERO = 0;
-    public static final int DURATION_LONG = 800;
+    public static final int DURATION_LONG = 1000;
     //存储管理器中的view
     private Map<ActionType,View> mViews = new HashMap<>();
     //每个view 的中心点坐标
@@ -31,10 +32,13 @@ public class AnimManager {
     private float[] screenCenter = new float[]{0,0};
     private Context mContext;
 
+    private IAnimationEnd mListener;
+
     public AnimManager(Context mContext) {
         this.mContext = mContext;
         screenCenter = getScreenCenter();
     }
+
 
     private float[] getScreenCenter(){
         DisplayMetrics dm = new DisplayMetrics();
@@ -148,6 +152,39 @@ public class AnimManager {
         animatorSet.start();
     }
 
+    public void scaleAnim(View view,final IAnimationEnd listener){
+        AnimatorSet animatorSet = new AnimatorSet();
+        ObjectAnimator scaleAnimX = ObjectAnimator.ofFloat(view,"scaleX",0.0f);
+        ObjectAnimator scaleAnimY = ObjectAnimator.ofFloat(view,"scaleY",0.0f);
+
+        animatorSet.setDuration(300);
+        animatorSet.setInterpolator(new DecelerateInterpolator());
+        animatorSet.playTogether(scaleAnimX, scaleAnimY);
+        animatorSet.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                listener.onAnimationEnd();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+
+        animatorSet.start();
+    }
+
 
     /**
      * 初始进入程序时的动画控制
@@ -158,11 +195,7 @@ public class AnimManager {
             float[]viewLocation = getHidePosition(tempView,type);
             translationAnim(tempView, viewLocation[0], viewLocation[1],DURATION_ZERO);
         }
-//        for(ActionType type : mViews.keySet()){
-//            translationAnim(mViews.get(type), 0, 0,DURATION_LONG);
-//        }
-
-        revertView(DURATION_NORMAL);
+        revertView(DURATION_LONG);
     }
     /**
      * 获取view的中心点坐标
@@ -175,5 +208,10 @@ public class AnimManager {
         return new float[]{viewLocation[0]+view.getWidth()/2,viewLocation[1]+view.getHeight()/2};
     }
 
-
+    public interface IAnimationEnd{
+        /**
+         * 动画执行完成后的执行的动作
+         */
+        public void onAnimationEnd();
+    }
 }

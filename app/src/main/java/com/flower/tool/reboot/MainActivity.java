@@ -1,7 +1,9 @@
 package com.flower.tool.reboot;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -10,13 +12,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 
 public class MainActivity extends Activity implements View.OnClickListener, View.OnTouchListener {
     private LinearLayout mLLContainer;
     private TextView mTvPowerOff;
     private TextView mTvReboot;
     private TextView mTvAirPlane;
-    private TextView mTvSlient;
+    private TextView mTvSilent;
     private AnimManager mAnimManager;
 
     @Override
@@ -30,6 +34,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         initView();
 
         addListener();
+
     }
 
     private void addListener() {
@@ -37,7 +42,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         mTvPowerOff.setOnClickListener(this);
         mTvReboot.setOnClickListener(this);
         mTvAirPlane.setOnClickListener(this);
-        mTvSlient.setOnClickListener(this);
+        mTvSilent.setOnClickListener(this);
     }
 
     private void initView() {
@@ -45,7 +50,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         mTvPowerOff = (TextView) findViewById(R.id.tv_power_off);
         mTvReboot = (TextView) findViewById(R.id.tv_reboot);
         mTvAirPlane = (TextView) findViewById(R.id.tv_air_plane);
-        mTvSlient = (TextView) findViewById(R.id.tv_silent);
+        mTvSilent = (TextView) findViewById(R.id.tv_silent);
 
         mAnimManager = new AnimManager(this);
 
@@ -55,8 +60,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 mAnimManager.addView(ActionType.POWER_OFF, mTvPowerOff);
                 mAnimManager.addView(ActionType.REBOOT, mTvReboot);
                 mAnimManager.addView(ActionType.AIR_PLANE, mTvAirPlane);
-                mAnimManager.addView(ActionType.SILENT, mTvSlient);
-
+                mAnimManager.addView(ActionType.SILENT, mTvSilent);
+                //进入app 动画
                 mAnimManager.initEnter();
             }
         });
@@ -65,23 +70,58 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     }
 
     @Override
-    public void onClick(View view) {
+    public void onClick(final View view) {
         if(mAnimManager.canExecuteAction()){
-            //Toast.makeText(this,"执行 " + ((TextView)view).getText().toString(),Toast.LENGTH_SHORT).show();
-            //mAnimManager.moveViewToOrigin(view);
+            mAnimManager.scaleAnim(view,new AnimManager.IAnimationEnd() {
+                @Override
+                public void onAnimationEnd() {
+                    executeAction(view);
+                }
+            });
         }else{
             mAnimManager.confirmExecute(view);
+        }
+    }
+
+    private void executeAction(View view){
+        switch (view.getId()){
+            case R.id.tv_power_off:
+                powerOff();
+//              nforceCallingOrSelfPermission(android.Manifest.permission.REBOOT, null);
+                break;
+            case R.id.tv_reboot:
+                reboot();
+                //mPowerManager.reboot("reboot");
+                break;
+            default:
+                TextView textView = (TextView) view;
+                Toast.makeText(this,textView.getText().toString(),Toast.LENGTH_SHORT).show();
+        }
+        finish();
+    }
+
+    private void powerOff() {
+        try {
+            Runtime.getRuntime().exec(new String[]{"su", "-c", "poweroff -f"});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void reboot() {
+        try {
+            Runtime.getRuntime().exec(new String[]{ "su", "-c", "reboot" });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        //只有 界面 上有隐藏的view的情况下 才可对onTouch方法进行处理
         if(mAnimManager.canExecuteAction()){
             mAnimManager.resetVisibity();
-            mAnimManager.revertView(AnimManager.DURATION_LONG);
-
+            mAnimManager.revertView(AnimManager.DURATION_NORMAL);
         }
         return false;
     }
