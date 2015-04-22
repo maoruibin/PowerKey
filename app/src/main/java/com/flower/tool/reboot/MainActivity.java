@@ -1,9 +1,11 @@
 package com.flower.tool.reboot;
 
 import android.app.Activity;
+import android.app.admin.DevicePolicyManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -11,6 +13,10 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.flower.tool.reboot.manager.AnimManager;
+import com.flower.tool.reboot.receiver.AdminManageReceiver;
+import com.flower.tool.reboot.service.FloatWindowService;
 
 import java.io.IOException;
 
@@ -35,6 +41,18 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
         addListener();
 
+        //启动悬浮球
+        startService(new Intent(this, FloatWindowService.class));
+
+        activityDevice();
+    }
+
+    private void activityDevice(){
+        ComponentName mAdminName = new ComponentName(this, AdminManageReceiver.class);
+        DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        if (!mDPM.isAdminActive(mAdminName)) {
+            showAdminManagement(mAdminName);
+        }
     }
 
     private void addListener() {
@@ -49,7 +67,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         mLLContainer = (LinearLayout) findViewById(R.id.ll_container);
         mTvPowerOff = (TextView) findViewById(R.id.tv_power_off);
         mTvReboot = (TextView) findViewById(R.id.tv_reboot);
-        mTvAirPlane = (TextView) findViewById(R.id.tv_air_plane);
+        mTvAirPlane = (TextView) findViewById(R.id.tv_lock_screen);
         mTvSilent = (TextView) findViewById(R.id.tv_silent);
 
         mAnimManager = new AnimManager(this);
@@ -87,11 +105,16 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         switch (view.getId()){
             case R.id.tv_power_off:
                 powerOff();
-//              nforceCallingOrSelfPermission(android.Manifest.permission.REBOOT, null);
                 break;
             case R.id.tv_reboot:
                 reboot();
-                //mPowerManager.reboot("reboot");
+                break;
+            case R.id.tv_lock_screen:
+//                if (mDPM.isAdminActive(mAdminName)) {
+//                    mDPM.lockNow();
+//                }
+                break;
+            case R.id.tv_silent:
                 break;
             default:
                 TextView textView = (TextView) view;
@@ -124,5 +147,12 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             mAnimManager.revertView(AnimManager.DURATION_NORMAL);
         }
         return false;
+    }
+
+    private void showAdminManagement(ComponentName mAdminName) {
+        Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+        intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mAdminName);
+        intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION, R.string.desc_enable_admin);
+        startActivityForResult(intent,1);
     }
 }

@@ -1,4 +1,4 @@
-package com.flower.tool.reboot;
+package com.flower.tool.reboot.manager;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -8,6 +8,8 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+
+import com.flower.tool.reboot.ActionType;
 
 import java.util.HashMap;
 import java.util.Map;

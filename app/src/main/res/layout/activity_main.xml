@@ -27,17 +27,17 @@
 
 
         <TextView
-            android:id="@+id/tv_air_plane"
+            android:id="@+id/tv_lock_screen"
             style="@style/button_style"
             android:layout_below="@+id/tv_power_off"
-            android:text="飞行模式"
+            android:text="锁屏"
             android:layout_marginRight="20dp"/>
 
         <TextView
             android:id="@+id/tv_silent"
             style="@style/button_style"
             android:layout_below="@+id/tv_reboot"
-            android:layout_toRightOf="@+id/tv_air_plane"
+            android:layout_toRightOf="@+id/tv_lock_screen"
             android:text="静音"
             android:layout_marginLeft="20dp"/>
     </RelativeLayout>
