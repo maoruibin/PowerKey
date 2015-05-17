@@ -28,7 +28,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private TextView mTvAirPlane;
     private TextView mTvSilent;
     private AnimManager mAnimManager;
-
+    private DevicePolicyManager mDPM;
+    private ComponentName mAdminName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +49,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     }
 
     private void activityDevice(){
-        ComponentName mAdminName = new ComponentName(this, AdminManageReceiver.class);
-        DevicePolicyManager mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
+        mAdminName = new ComponentName(this, AdminManageReceiver.class);
+        mDPM = (DevicePolicyManager) getSystemService(Context.DEVICE_POLICY_SERVICE);
         if (!mDPM.isAdminActive(mAdminName)) {
             showAdminManagement(mAdminName);
         }
@@ -110,9 +111,9 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 reboot();
                 break;
             case R.id.tv_lock_screen:
-//                if (mDPM.isAdminActive(mAdminName)) {
-//                    mDPM.lockNow();
-//                }
+                if (mDPM.isAdminActive(mAdminName)) {
+                    mDPM.lockNow();
+                }
                 break;
             case R.id.tv_silent:
                 break;

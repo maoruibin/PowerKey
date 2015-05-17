@@ -23,36 +23,36 @@ public class FloatControlView extends LinearLayout {
     public static int viewHeight;
 
     /**
-     * ¼ÇÂ¼µ±Ç°ÊÖÖ¸Î»ÖÃÔÚÆÁÄ»ÉÏµÄºá×ø±êÖµ
+     * è®°å½•å½“å‰æ‰‹æŒ‡ä½ç½®åœ¨å±å¹•ä¸Šçš„æ¨ªåæ ‡å€¼
      */
     private float xInScreen;
 
     /**
-     * ¼ÇÂ¼µ±Ç°ÊÖÖ¸Î»ÖÃÔÚÆÁÄ»ÉÏµÄ×İ×ø±êÖµ
+     * è®°å½•å½“å‰æ‰‹æŒ‡ä½ç½®åœ¨å±å¹•ä¸Šçš„çºµåæ ‡å€¼
      */
     private float yInScreen;
     /**
-     * ¼ÇÂ¼ÊÖÖ¸°´ÏÂÊ±ÔÚÆÁÄ»ÉÏµÄºá×ø±êµÄÖµ
+     * è®°å½•æ‰‹æŒ‡æŒ‰ä¸‹æ—¶åœ¨å±å¹•ä¸Šçš„æ¨ªåæ ‡çš„å€¼
      */
     private float xDownInScreen;
 
     /**
-     * ¼ÇÂ¼ÊÖÖ¸°´ÏÂÊ±ÔÚÆÁÄ»ÉÏµÄ×İ×ø±êµÄÖµ
+     * è®°å½•æ‰‹æŒ‡æŒ‰ä¸‹æ—¶åœ¨å±å¹•ä¸Šçš„çºµåæ ‡çš„å€¼
      */
     private float yDownInScreen;
 
     /**
-     * ¼ÇÂ¼ÊÖÖ¸°´ÏÂÊ±ÔÚĞ¡Ğü¸¡´°µÄViewÉÏµÄºá×ø±êµÄÖµ
+     * è®°å½•æ‰‹æŒ‡æŒ‰ä¸‹æ—¶åœ¨å°æ‚¬æµ®çª—çš„Viewä¸Šçš„æ¨ªåæ ‡çš„å€¼
      */
     private float xInView;
 
     /**
-     * ¼ÇÂ¼ÊÖÖ¸°´ÏÂÊ±ÔÚĞ¡Ğü¸¡´°µÄViewÉÏµÄ×İ×ø±êµÄÖµ
+     * è®°å½•æ‰‹æŒ‡æŒ‰ä¸‹æ—¶åœ¨å°æ‚¬æµ®çª—çš„Viewä¸Šçš„çºµåæ ‡çš„å€¼
      */
     private float yInView;
 
     /**
-     * ¼ÇÂ¼ÏµÍ³×´Ì¬À¸µÄ¸ß¶È
+     * è®°å½•ç³»ç»ŸçŠ¶æ€æ çš„é«˜åº¦
      */
     private static int statusBarHeight;
 
@@ -61,14 +61,14 @@ public class FloatControlView extends LinearLayout {
     private OnClickFloatView mListener;
 
     /**
-     * ÉÏ´Îµã»÷µÄÊ±¼ä
+     * ä¸Šæ¬¡ç‚¹å‡»çš„æ—¶é—´
      */
     private long waitTime = 300;
 
-    // ÒÑ¾­Á¬Ğø touch µÄ´ÎÊı
+    // å·²ç»è¿ç»­ touch çš„æ¬¡æ•°
     private long touchTime = 0;
-    
-    
+
+
     public FloatControlView(Context context) {
         this(context, null);
     }
@@ -114,7 +114,7 @@ public class FloatControlView extends LinearLayout {
         return super.onTouchEvent(event);
     }
     /**
-     * ¸üĞÂĞ¡Ğü¸¡´°ÔÚÆÁÄ»ÖĞµÄÎ»ÖÃ¡£
+     * æ›´æ–°å°æ‚¬æµ®çª—åœ¨å±å¹•ä¸­çš„ä½ç½®ã€‚
      */
     private void updateViewPosition() {
         mParams.x = (int) (xInScreen - xInView);
@@ -123,18 +123,18 @@ public class FloatControlView extends LinearLayout {
     }
 
     /**
-     * ½«Ğ¡Ğü¸¡´°µÄ²ÎÊı´«Èë£¬ÓÃÓÚ¸üĞÂĞ¡Ğü¸¡´°µÄÎ»ÖÃ¡£
+     * å°†å°æ‚¬æµ®çª—çš„å‚æ•°ä¼ å…¥ï¼Œç”¨äºæ›´æ–°å°æ‚¬æµ®çª—çš„ä½ç½®ã€‚
      *
      * @param params
-     *            Ğ¡Ğü¸¡´°µÄ²ÎÊı
+     *            å°æ‚¬æµ®çª—çš„å‚æ•°
      */
     public void setParams(WindowManager.LayoutParams params) {
         mParams = params;
     }
     /**
-     * ÓÃÓÚ»ñÈ¡×´Ì¬À¸µÄ¸ß¶È¡£
+     * ç”¨äºè·å–çŠ¶æ€æ çš„é«˜åº¦ã€‚
      *
-     * @return ·µ»Ø×´Ì¬À¸¸ß¶ÈµÄÏñËØÖµ¡£
+     * @return è¿”å›çŠ¶æ€æ é«˜åº¦çš„åƒç´ å€¼ã€‚
      */
     private int getStatusBarHeight() {
         if (statusBarHeight == 0) {

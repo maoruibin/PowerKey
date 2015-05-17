@@ -13,18 +13,18 @@ import com.flower.tool.reboot.view.FloatControlView;
 public class MyWindowManager {
     private static FloatControlView mFloatView;
     /**
-     * Ğ¡Ğü¸¡´°ViewµÄ²ÎÊı
+     * å°æ‚¬æµ®çª—Viewçš„å‚æ•°
      */
     private static WindowManager.LayoutParams smallWindowParams;
 
     /**
-     * ÓÃÓÚ¿ØÖÆÔÚÆÁÄ»ÉÏÌí¼Ó»òÒÆ³ıĞü¸¡´°
+     * ç”¨äºæ§åˆ¶åœ¨å±å¹•ä¸Šæ·»åŠ æˆ–ç§»é™¤æ‚¬æµ®çª—
      */
     private static WindowManager mWindowManager;
 
     /**
-     * ´´½¨Ğü¸¡Çò
-     * @param context ÉÏÏÂÎÄ
+     * åˆ›å»ºæ‚¬æµ®çƒ
+     * @param context ä¸Šä¸‹æ–‡
      */
     public static void createFloatView(Context context,FloatControlView.OnClickFloatView mListener) {
         WindowManager windowManager = getWindowManager(context);
@@ -52,10 +52,10 @@ public class MyWindowManager {
 
 
     /**
-     * ½«Ğ¡Ğü¸¡´°´ÓÆÁÄ»ÉÏÒÆ³ı¡£
+     * å°†å°æ‚¬æµ®çª—ä»å±å¹•ä¸Šç§»é™¤ã€‚
      *
      * @param context
-     *            ±ØĞëÎªÓ¦ÓÃ³ÌĞòµÄContext.
+     *            å¿…é¡»ä¸ºåº”ç”¨ç¨‹åºçš„Context.
      */
     public static void removeSmallWindow(Context context) {
         if (mFloatView != null) {
