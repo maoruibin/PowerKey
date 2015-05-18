@@ -1,10 +1,17 @@
 package com.flower.tool.reboot;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.WallpaperManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +24,7 @@ import android.widget.Toast;
 import com.flower.tool.reboot.manager.AnimManager;
 import com.flower.tool.reboot.receiver.AdminManageReceiver;
 import com.flower.tool.reboot.service.FloatWindowService;
+import com.flower.tool.reboot.util.Util;
 
 import java.io.IOException;
 
@@ -36,6 +44,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
+
         setContentView(R.layout.activity_main);
 
         initView();
@@ -46,7 +56,27 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         startService(new Intent(this, FloatWindowService.class));
 
         activityDevice();
+
+        //启动截屏操作
+
+        shot();
+
+
     }
+
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    private void shot() {
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
+        Drawable wallpaperDrawable = wallpaperManager.getDrawable();
+        Bitmap bm = ((BitmapDrawable) wallpaperDrawable).getBitmap();
+        Bitmap dealBm = Util.fastblur(bm,90);
+        Drawable drawable = new BitmapDrawable(dealBm);
+        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN){
+            mLLContainer.setBackground(drawable);
+        }
+    }
+
+
 
     private void activityDevice(){
         mAdminName = new ComponentName(this, AdminManageReceiver.class);
