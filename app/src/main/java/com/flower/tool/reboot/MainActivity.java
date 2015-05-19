@@ -8,9 +8,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -57,23 +57,42 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
         activityDevice();
 
-        //启动截屏操作
-
-        shot();
+        //设置背景为桌面壁纸 并模糊化
+        background();
 
 
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void shot() {
-        WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
-        Drawable wallpaperDrawable = wallpaperManager.getDrawable();
-        Bitmap bm = ((BitmapDrawable) wallpaperDrawable).getBitmap();
-        Bitmap dealBm = Util.fastblur(bm,90);
-        Drawable drawable = new BitmapDrawable(dealBm);
-        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN){
-            mLLContainer.setBackground(drawable);
-        }
+    private void background() {
+        new AsyncTask<Integer, Void, Drawable>() {
+            private Drawable wallpaperDrawable;
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+                wallpaperDrawable = wallpaperManager.getDrawable();
+                if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN){
+                    mLLContainer.setBackground(wallpaperDrawable);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Drawable drawable) {
+                super.onPostExecute(drawable);
+                if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN){
+                    mLLContainer.setBackground(drawable);
+                }
+            }
+
+            @Override
+            protected Drawable doInBackground(Integer... params) {
+                Bitmap bm = ((BitmapDrawable) wallpaperDrawable).getBitmap();
+                Bitmap dealBm = Util.fastblur(bm,90);
+                Drawable drawable = new BitmapDrawable(dealBm);
+                return drawable;
+            }
+        }.execute(0);
     }
 
 
