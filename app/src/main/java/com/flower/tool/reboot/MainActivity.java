@@ -33,7 +33,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private LinearLayout mLLContainer;
     private TextView mTvPowerOff;
     private TextView mTvReboot;
-    private TextView mTvAirPlane;
+    private TextView mTvLockScreen;
     private TextView mTvSilent;
     private AnimManager mAnimManager;
     private DevicePolicyManager mDPM;
@@ -109,7 +109,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         mLLContainer.setOnTouchListener(this);
         mTvPowerOff.setOnClickListener(this);
         mTvReboot.setOnClickListener(this);
-        mTvAirPlane.setOnClickListener(this);
+        mTvLockScreen.setOnClickListener(this);
         mTvSilent.setOnClickListener(this);
     }
 
@@ -117,7 +117,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         mLLContainer = (LinearLayout) findViewById(R.id.ll_container);
         mTvPowerOff = (TextView) findViewById(R.id.tv_power_off);
         mTvReboot = (TextView) findViewById(R.id.tv_reboot);
-        mTvAirPlane = (TextView) findViewById(R.id.tv_lock_screen);
+        mTvLockScreen = (TextView) findViewById(R.id.tv_lock_screen);
         mTvSilent = (TextView) findViewById(R.id.tv_silent);
 
         mAnimManager = new AnimManager(this);
@@ -127,7 +127,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
             public void run() {
                 mAnimManager.addView(ActionType.POWER_OFF, mTvPowerOff);
                 mAnimManager.addView(ActionType.REBOOT, mTvReboot);
-                mAnimManager.addView(ActionType.AIR_PLANE, mTvAirPlane);
+                mAnimManager.addView(ActionType.AIR_PLANE, mTvLockScreen);
                 mAnimManager.addView(ActionType.SILENT, mTvSilent);
                 //进入app 动画
                 mAnimManager.initEnter();
@@ -139,6 +139,12 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     @Override
     public void onClick(final View view) {
+        if(view.equals(mTvLockScreen)){
+            if (mDPM.isAdminActive(mAdminName)) {
+                mDPM.lockNow();
+            }
+            return;
+        }
         if(mAnimManager.canExecuteAction()){
             mAnimManager.scaleAnim(view,new AnimManager.IAnimationEnd() {
                 @Override
@@ -160,9 +166,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
                 reboot();
                 break;
             case R.id.tv_lock_screen:
-                if (mDPM.isAdminActive(mAdminName)) {
-                    mDPM.lockNow();
-                }
+
                 break;
             case R.id.tv_silent:
                 break;
