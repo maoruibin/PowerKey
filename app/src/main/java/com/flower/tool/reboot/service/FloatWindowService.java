@@ -33,7 +33,9 @@ public class FloatWindowService extends Service implements FloatControlView.OnCl
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        MyWindowManager.createFloatView(this, this);
+        if (mDPM.isAdminActive(mAdminName)) {
+            MyWindowManager.createFloatView(this, this);
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 
