@@ -25,6 +25,7 @@ import com.flower.tool.reboot.manager.AnimManager;
 import com.flower.tool.reboot.receiver.AdminManageReceiver;
 import com.flower.tool.reboot.service.FloatWindowService;
 import com.flower.tool.reboot.util.Util;
+import com.flower.tool.reboot.view.BlurringView;
 
 import java.io.IOException;
 
@@ -35,6 +36,7 @@ public class MainActivity extends Activity implements View.OnClickListener, View
     private TextView mTvReboot;
     private TextView mTvLockScreen;
     private TextView mTvSilent;
+    private BlurringView mBlurringView;
     private AnimManager mAnimManager;
     private DevicePolicyManager mDPM;
     private ComponentName mAdminName;
@@ -48,6 +50,8 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
         setContentView(R.layout.activity_main);
 
+
+
         initView();
 
         addListener();
@@ -58,44 +62,20 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         activityDevice();
 
         //设置背景为桌面壁纸 并模糊化
-        background();
+        //background();
 
 
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    private void background() {
-        new AsyncTask<Integer, Void, Drawable>() {
-            private Drawable wallpaperDrawable;
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
-                wallpaperDrawable = wallpaperManager.getDrawable();
-                if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN){
-                    mLLContainer.setBackground(wallpaperDrawable);
-                }
-            }
+    /**
+     * 设置背景图片为桌面图片
+     */
+    private void setContainerBackground(){
+        WallpaperManager wallpaperManager = WallpaperManager.getInstance(getApplicationContext());
+        Drawable wallpaperDrawable = wallpaperManager.getDrawable();
+        mLLContainer.setBackground(wallpaperDrawable);
 
-            @Override
-            protected void onPostExecute(Drawable drawable) {
-                super.onPostExecute(drawable);
-                if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.JELLY_BEAN){
-                    mLLContainer.setBackground(drawable);
-                }
-            }
-
-            @Override
-            protected Drawable doInBackground(Integer... params) {
-                Bitmap bm = ((BitmapDrawable) wallpaperDrawable).getBitmap();
-                Bitmap dealBm = Util.fastblur(bm,90);
-                Drawable drawable = new BitmapDrawable(dealBm);
-                return drawable;
-            }
-        }.execute(0);
     }
-
-
 
     private void activityDevice(){
         mAdminName = new ComponentName(this, AdminManageReceiver.class);
@@ -119,9 +99,14 @@ public class MainActivity extends Activity implements View.OnClickListener, View
         mTvReboot = (TextView) findViewById(R.id.tv_reboot);
         mTvLockScreen = (TextView) findViewById(R.id.tv_lock_screen);
         mTvSilent = (TextView) findViewById(R.id.tv_silent);
+        mBlurringView = (BlurringView) findViewById(R.id.blurring_view);
+
+        setContainerBackground();
+
+        // Give the blurring view a reference to the blurred view.
+        mBlurringView.setBlurredView(mLLContainer);
 
         mAnimManager = new AnimManager(this);
-
         mLLContainer.post(new Runnable() {
             @Override
             public void run() {
@@ -179,16 +164,19 @@ public class MainActivity extends Activity implements View.OnClickListener, View
 
     private void powerOff() {
         try {
-            Runtime.getRuntime().exec(new String[]{"su", "-c", "poweroff -f"});
-        } catch (IOException e) {
-            e.printStackTrace();
+            Process proc = Runtime.getRuntime()
+                    .exec(new String[]{ "su", "-c", "reboot -p" });
+            proc.waitFor();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
     private void reboot() {
         try {
-            Runtime.getRuntime().exec(new String[]{ "su", "-c", "reboot" });
-        } catch (IOException e) {
+            Process proc = Runtime.getRuntime().exec(new String[]{ "su", "-c", "reboot" });
+            proc.waitFor();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
