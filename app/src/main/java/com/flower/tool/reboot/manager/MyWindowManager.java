@@ -35,10 +35,10 @@ public class MyWindowManager {
             mFloatView.setClickListener(mListener);
             if(smallWindowParams == null){
                 smallWindowParams = new WindowManager.LayoutParams();
-                smallWindowParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+                smallWindowParams.type = WindowManager.LayoutParams.TYPE_TOAST;
                 smallWindowParams.format = PixelFormat.RGBA_8888;
                 smallWindowParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+                        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE ;
                 smallWindowParams.gravity = Gravity.LEFT | Gravity.TOP;
                 smallWindowParams.width = FloatControlView.viewWidth;
                 smallWindowParams.height = FloatControlView.viewHeight;

@@ -1,9 +1,7 @@
 package com.flower.tool.reboot.view;
 
 import android.content.Context;
-import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,6 +11,7 @@ import android.widget.LinearLayout;
 import com.flower.tool.reboot.R;
 
 import java.lang.reflect.Field;
+
 
 /**
  * Created by Mao on 16:46 4/22/2015

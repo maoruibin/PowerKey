@@ -3,5 +3,5 @@
     android:id="@+id/tv_float"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/lock_screen">
+    android:background="@drawable/power_icon">
 </TextView>
