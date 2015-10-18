@@ -11,6 +11,9 @@
 
 Note:关机、重启需要手机对App开放Root权限 ，飞行模式和静音功能尚未开发。
 
+## 下载Apk
+[百度网盘](http://yun.baidu.com/share/link?shareid=1807160107&uk=319427821)
+
 ## 更新日志
 
 2015/10/18
